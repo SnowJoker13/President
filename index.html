@@ -320,6 +320,24 @@ const FCU_INSPECTION_ITEMS = [
   { id: 10, desc: "Thermostat, controls & safety switches operate correctly" }
 ];
 
+/* ---- Room Inspection (ตรวจสอบห้องพักประจำวัน) ---- */
+const ROOM_INSPECT_ITEMS = [
+  { id: 1, desc: "ความสะอาดโดยรวมของห้องพัก" },
+  { id: 2, desc: "เครื่องปรับอากาศทำงานปกติ ไม่มีเสียงผิดปกติ" },
+  { id: 3, desc: "ไฟฟ้า / หลอดไฟทุกดวงใช้งานได้" },
+  { id: 4, desc: "ปลั๊กไฟ / เต้ารับ อยู่ในสภาพปลอดภัย" },
+  { id: 5, desc: "โทรทัศน์และรีโมทใช้งานได้" },
+  { id: 6, desc: "โทรศัพท์ในห้องใช้งานได้" },
+  { id: 7, desc: "ตู้เย็น / มินิบาร์ทำงานปกติ" },
+  { id: 8, desc: "น้ำประปา ก๊อกน้ำ ฝักบัว ไหลปกติไม่รั่วซึม" },
+  { id: 9, desc: "สุขภัณฑ์ (โถส้วม อ่างล้างหน้า) สะอาด ไม่มีการรั่วซึม" },
+  { id: 10, desc: "ไม่มีกลิ่นอับหรือกลิ่นบุหรี่ในห้อง" },
+  { id: 11, desc: "หน้าต่าง / มู่ลี่ / ผ้าม่าน อยู่ในสภาพดี" },
+  { id: 12, desc: "เฟอร์นิเจอร์อยู่ในสภาพดี ไม่ชำรุด" },
+  { id: 13, desc: "สัญญาณเตือนไฟไหม้ / สปริงเกอร์ ใช้งานได้" },
+  { id: 14, desc: "ตู้เซฟ (Safe box) ใช้งานได้" }
+];
+
 const ROOM_CHECK_UNIT_COUNT = 4;
 const REFRIGERANT_TYPES = ["R22", "R410A", "R32", "Other"];
 const ROOM_CHECK_FREQUENCIES = [
@@ -1071,6 +1089,10 @@ function Header(props) {
     ahuForm: "AHU Maintenance Checklist",
     ahuList: "ประวัติ AHU Checklist",
     ahuReport: "รายงาน AHU Checklist",
+    roomInspectHome: "ตรวจสอบห้องพัก",
+    roomInspectForm: "ตรวจสอบห้องพักประจำวัน",
+    roomInspectList: "ประวัติการตรวจสอบห้องพัก",
+    roomInspectReport: "รายงานตรวจสอบห้องพัก",
     poolHome: "Swimming Pool Operation",
     poolForm: "บันทึกสระว่ายน้ำ",
     poolMonth: "รายงานสระว่ายน้ำ (รายเดือน)",
@@ -1163,6 +1185,7 @@ function HomeView(props) {
   const onSelectJob = props.onSelectJob;
   const jobs = [
     { key: "ahu", title: "AHU Preventive Maintenance", desc: "ตรวจสอบและบันทึกสภาพ Air Handling Unit", icon: <IconWind size={26} /> },
+    { key: "roomInspect", title: "ตรวจสอบห้องพัก", desc: "ตรวจสอบสภาพห้องพักประจำวัน ความสะอาด ระบบไฟฟ้า ประปา และความปลอดภัย", icon: <IconBedRoom size={26} /> },
     { key: "pool", title: "Swimming Pool Operation", desc: "บันทึกค่า PH / CL และแรงดันถังกรองรายวัน", icon: <IconDroplets size={26} /> },
     { key: "schedule", title: "Schedule preventive maintenance", desc: "กำหนดการบำรุงรักษาเชิงป้องกัน", icon: <IconCalendar size={26} /> },
     { key: "roomcheck", title: "PM-Check ใบเช็คห้องพัก PP", desc: "Quarterly Inspection Checklist ห้องพัก President Place ปี 2569", icon: <IconBedRoom size={26} /> },
@@ -3250,6 +3273,373 @@ function AhuReportView(props) {
           <div className="text-sm font-medium mb-2 text-amber-100">{record.chiefEngineerName || "-"}</div>
           {record.signature ? <img src={record.signature} alt="signature" className="h-16 rounded bg-white p-1" /> : <div className="text-xs text-neutral-600">ยังไม่มีลายเซ็น</div>}
         </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Room Inspection (ตรวจสอบห้องพักประจำวัน) ---------- */
+function RoomInspectHomeView(props) {
+  const count = props.count;
+  const recent = props.recent;
+  const onNew = props.onNew;
+  const onHistory = props.onHistory;
+  const onOpenReport = props.onOpenReport;
+  return (
+    <div className="space-y-4">
+      <div className="bg-neutral-900 rounded-xl border border-neutral-800 border-t-2 border-t-amber-500/40 shadow-lg shadow-black/30 p-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-300 flex items-center justify-center"><IconBedRoom size={20} /></div>
+          <div>
+            <div className="font-serif font-semibold text-amber-100">ตรวจสอบห้องพักประจำวัน</div>
+            <div className="text-xs text-neutral-500">{count} รายการที่บันทึกไว้ทั้งหมด</div>
+          </div>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <button onClick={onNew} className="bg-gradient-to-r from-amber-400 to-amber-600 text-black rounded-xl py-4 flex flex-col items-center justify-center gap-1.5 shadow-lg shadow-amber-500/10 font-medium">
+          <IconPlus size={20} /><span className="text-sm">บันทึกใหม่</span>
+        </button>
+        <button onClick={onHistory} className="bg-neutral-900 border border-amber-500/25 rounded-xl py-4 flex flex-col items-center justify-center gap-1.5 text-amber-200">
+          <IconHistory size={20} /><span className="text-sm font-medium">ดูประวัติทั้งหมด</span>
+        </button>
+      </div>
+      {recent.length > 0 ? (
+        <div>
+          <div className="text-[11px] uppercase tracking-wide text-amber-500/60 mb-2 px-1">รายการล่าสุด</div>
+          <div className="space-y-2">
+            {recent.map(function (r) {
+              return (
+                <button key={r.id} onClick={function () { onOpenReport(r.id); }} className="w-full bg-neutral-900 rounded-xl border border-neutral-800 p-3 text-left flex items-center justify-between gap-2 hover:border-amber-500/30 transition">
+                  <div className="min-w-0">
+                    <div className="text-sm font-medium text-neutral-200 truncate">{r.building} Floor {r.floor} ห้อง {r.roomNo}</div>
+                    <div className="text-xs text-neutral-500">{formatThaiDate(r.date)}</div>
+                  </div>
+                  <IconChevronRight size={16} className="text-amber-500/40 shrink-0" />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function RoomInspectFormView(props) {
+  const record = props.record;
+  const onSave = props.onSave;
+  const onCancel = props.onCancel;
+  const onDelete = props.onDelete;
+
+  const [recordId] = useState(function () { return record ? record.id : (Date.now().toString()); });
+  const [building, setBuilding] = useState(record ? record.building : "");
+  const [floor, setFloor] = useState(record ? record.floor : "");
+  const [roomNo, setRoomNo] = useState(record ? record.roomNo : "");
+  const [date, setDate] = useState(record ? record.date : todayISO());
+  const [inspector, setInspector] = useState(record ? record.inspector : "");
+  const [checklist, setChecklist] = useState(record && record.checklist ? record.checklist : {});
+  const [remark, setRemark] = useState(record ? record.remark : "");
+  const [error, setError] = useState("");
+  const [photos, setPhotos] = useState([]);
+
+  useEffect(function () {
+    if (!window.fbDb) return;
+    window.fbDb.collection("roomInspectPhotos").where("roomInspectId", "==", recordId).get().then(function (snap) {
+      const arr = [];
+      snap.forEach(function (doc) { arr.push({ id: doc.id, url: doc.data().url }); });
+      setPhotos(arr);
+    });
+  }, []);
+
+  function handleAddPhoto(dataUrl) {
+    const photoId = Date.now().toString() + "_" + Math.random().toString(36).slice(2, 8);
+    setPhotos(function (p) { return p.concat([{ id: photoId, url: dataUrl, uploading: true }]); });
+    uploadPhotoToStorage(dataUrl, "roomInspectPhotos/" + recordId + "/" + photoId + ".jpg", function (url) {
+      if (window.fbDb) {
+        window.fbDb.collection("roomInspectPhotos").doc(photoId).set({ roomInspectId: recordId, url: url, createdAt: new Date().toISOString() });
+      }
+      setPhotos(function (p) { return p.map(function (ph) { return ph.id === photoId ? { id: photoId, url: url } : ph; }); });
+    }, function (err) {
+      console.error("อัปโหลดรูปไม่สำเร็จ", err);
+      setPhotos(function (p) { return p.filter(function (ph) { return ph.id !== photoId; }); });
+    });
+  }
+  function handleRemovePhoto(photoId) {
+    if (window.fbDb) { window.fbDb.collection("roomInspectPhotos").doc(photoId).delete(); }
+    if (window.fbStorage) { window.fbStorage.ref().child("roomInspectPhotos/" + recordId + "/" + photoId + ".jpg").delete().catch(function () {}); }
+    setPhotos(function (p) { return p.filter(function (ph) { return ph.id !== photoId; }); });
+  }
+
+  function setItemStatus(id, status) {
+    setChecklist(function (c) {
+      const cur = c[id] || {};
+      const next = {};
+      for (const k in c) next[k] = c[k];
+      next[id] = { status: cur.status === status ? null : status, remark: cur.remark || "" };
+      return next;
+    });
+  }
+  function setItemRemark(id, itemRemark) {
+    setChecklist(function (c) {
+      const cur = c[id] || {};
+      const next = {};
+      for (const k in c) next[k] = c[k];
+      next[id] = { status: cur.status || null, remark: itemRemark || "" };
+      return next;
+    });
+  }
+
+  function handleSave() {
+    if (!building || !floor || !roomNo || !date) {
+      setError("กรุณากรอก Building, Floor, เลขห้อง และวันที่ ให้ครบ");
+      return;
+    }
+    setError("");
+    onSave({
+      id: recordId,
+      building: building, floor: floor, roomNo: roomNo, date: date,
+      inspector: inspector, checklist: checklist, remark: remark
+    });
+  }
+
+  function handleDelete() {
+    if (!record) return;
+    if (window.confirm("ต้องการลบรายการนี้ใช่หรือไม่? ลบแล้วกู้คืนไม่ได้")) {
+      onDelete(record.id);
+    }
+  }
+
+  const floorOptions = TOWER_FLOORS[building] || [];
+
+  return (
+    <div className="space-y-4 pb-6">
+      {error ? <div className="bg-red-950/40 text-red-300 text-sm rounded-lg px-3 py-2 border border-red-800/50">{error}</div> : null}
+
+      <Section title="ข้อมูลทั่วไป">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Field label="Building">
+            <select value={building} onChange={function (e) { setBuilding(e.target.value); setFloor(""); }} className={inputCls}>
+              <option value="">เลือก...</option>
+              <option value="Tower A">Tower A</option>
+              <option value="Tower B">Tower B</option>
+            </select>
+          </Field>
+          <Field label="Floor">
+            <select value={floor} onChange={function (e) { setFloor(e.target.value); }} disabled={!building} className={inputCls}>
+              <option value="">เลือก...</option>
+              {floorOptions.map(function (f) { return <option key={f} value={f}>{f}</option>; })}
+            </select>
+          </Field>
+          <Field label="เลขห้อง"><input value={roomNo} onChange={function (e) { setRoomNo(e.target.value); }} className={inputCls} /></Field>
+          <Field label="Date (dd/mm/yyyy)"><DateField value={date} onChange={setDate} /></Field>
+          <div className="sm:col-span-2">
+            <Field label="ผู้ตรวจสอบ"><input value={inspector} onChange={function (e) { setInspector(e.target.value); }} className={inputCls} /></Field>
+          </div>
+        </div>
+      </Section>
+
+      <Section title={"รายการตรวจสอบ (" + ROOM_INSPECT_ITEMS.length + " รายการ)"}>
+        <div className="space-y-2">
+          {ROOM_INSPECT_ITEMS.map(function (item) {
+            const cur = checklist[item.id] || {};
+            const st = cur.status;
+            return (
+              <div key={item.id} className="border border-neutral-800 rounded-lg p-2.5 bg-neutral-950/40">
+                <div className="text-sm text-neutral-300 mb-2"><span className="text-amber-500/50 mr-1">{item.id}.</span>{item.desc}</div>
+                <div className="flex gap-1.5">
+                  <StatusBtn active={st === "pass"} color="green" onClick={function () { setItemStatus(item.id, "pass"); }} icon={<IconCheckCircle size={14} />} label="ปกติ" />
+                  <StatusBtn active={st === "fail"} color="red" onClick={function () { setItemStatus(item.id, "fail"); }} icon={<IconXCircle size={14} />} label="ผิดปกติ" />
+                  <StatusBtn active={st === "na"} color="gray" onClick={function () { setItemStatus(item.id, "na"); }} icon={<IconMinusCircle size={14} />} label="N/A" />
+                </div>
+                <input value={cur.remark || ""} onChange={function (e) { setItemRemark(item.id, e.target.value); }} placeholder="หมายเหตุ" className="mt-2 w-full text-xs border border-neutral-800 rounded px-2 py-1.5 bg-neutral-900 text-neutral-300 placeholder-neutral-600" />
+              </div>
+            );
+          })}
+        </div>
+      </Section>
+
+      <Section title="หมายเหตุทั่วไป">
+        <textarea value={remark} onChange={function (e) { setRemark(e.target.value); }} rows={3} className={inputCls} placeholder="หมายเหตุเพิ่มเติม (ถ้ามี)" />
+      </Section>
+
+      <Section title={"รูปภาพประกอบ (สูงสุด " + MAX_PHOTOS + " รูป)"}>
+        <PhotoPicker photos={photos} onAdd={handleAddPhoto} onRemove={handleRemovePhoto} />
+      </Section>
+
+      <div className="flex gap-2 pt-2">
+        <button onClick={onCancel} className="flex-1 border border-neutral-700 rounded-lg py-2.5 text-sm font-medium text-neutral-300">ยกเลิก</button>
+        <button onClick={handleSave} className="flex-1 bg-gradient-to-r from-amber-400 to-amber-600 text-black rounded-lg py-2.5 text-sm font-semibold flex items-center justify-center gap-1.5"><IconSave size={16} />บันทึก</button>
+      </div>
+      {record ? (
+        <button onClick={handleDelete} className="w-full border border-red-800/50 text-red-300 rounded-lg py-2 text-sm font-medium flex items-center justify-center gap-1.5"><IconTrash size={15} />ลบรายการนี้</button>
+      ) : null}
+    </div>
+  );
+}
+
+function RoomInspectListView(props) {
+  const records = props.records;
+  const onSelect = props.onSelect;
+  const onNew = props.onNew;
+  const onDelete = props.onDelete;
+
+  function handleDeleteClick(e, id) {
+    e.stopPropagation();
+    if (window.confirm("ต้องการลบรายการนี้ใช่หรือไม่? ลบแล้วกู้คืนไม่ได้")) {
+      onDelete(id);
+    }
+  }
+
+  return (
+    <div className="space-y-3">
+      <button onClick={onNew} className="w-full bg-gradient-to-r from-amber-400 to-amber-600 text-black rounded-lg py-2.5 text-sm font-semibold flex items-center justify-center gap-1.5"><IconPlus size={16} />บันทึกใหม่</button>
+      {records.length === 0 ? <div className="text-center text-neutral-500 text-sm py-10">ยังไม่มีข้อมูล</div> : null}
+      {records.map(function (r) {
+        const items = Object.values(r.checklist || {});
+        let failCount = 0;
+        for (let i = 0; i < items.length; i++) { if (items[i].status === "fail") failCount++; }
+        return (
+          <button key={r.id} onClick={function () { onSelect(r.id); }} className="w-full bg-neutral-900 rounded-xl border border-neutral-800 p-3.5 text-left flex items-center justify-between gap-2 hover:border-amber-500/30 transition">
+            <div className="min-w-0">
+              <div className="font-medium text-neutral-200 text-sm truncate">{r.building} Floor {r.floor} ห้อง {r.roomNo}</div>
+              <div className="text-xs text-neutral-500 mt-0.5">{formatThaiDate(r.date)} ผู้ตรวจ: {r.inspector || "-"}</div>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              {failCount > 0 ? <span className="text-xs bg-red-500/15 text-red-300 px-2 py-0.5 rounded-full border border-red-500/30">{failCount} ผิดปกติ</span> : null}
+              <button onClick={function (e) { handleDeleteClick(e, r.id); }} className="text-neutral-500 hover:text-red-400 p-1"><IconTrash size={16} /></button>
+              <IconChevronRight size={18} className="text-amber-500/40" />
+            </div>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function buildRoomInspectReportHtml(record, photos) {
+  const rowsArr = [];
+  for (let i = 0; i < ROOM_INSPECT_ITEMS.length; i++) {
+    const item = ROOM_INSPECT_ITEMS[i];
+    const v = (record.checklist && record.checklist[item.id]) || {};
+    let status = "-"; let color = "#9ca3af";
+    if (v.status === "pass") { status = "ปกติ"; color = "#16a34a"; }
+    else if (v.status === "fail") { status = "ผิดปกติ"; color = "#dc2626"; }
+    else if (v.status === "na") { status = "N/A"; color = "#9ca3af"; }
+    rowsArr.push("<tr><td>" + item.id + "</td><td>" + escapeHtml(item.desc) + "</td><td style=\"text-align:center;color:" + color + ";font-weight:600;\">" + status + "</td><td>" + escapeHtml(v.remark || "") + "</td></tr>");
+  }
+  const rows = rowsArr.join("");
+  const parts = [];
+  parts.push("<div class=\"report-header\"><img src=\"logo.png\" class=\"report-logo\" onerror=\"this.style.display='none'\" /><div class=\"report-title\">PRESIDENT HOTEL AND TOWER</div><div class=\"report-subtitle\">DAILY ROOM INSPECTION CHECKLIST</div></div>");
+  parts.push("<div class=\"info-grid\">");
+  parts.push("<div><b>Building:</b> " + escapeHtml(record.building) + "</div>");
+  parts.push("<div><b>Room No.:</b> " + escapeHtml(record.roomNo) + "</div>");
+  parts.push("<div><b>Floor:</b> " + escapeHtml(record.floor) + "</div>");
+  parts.push("<div><b>Date:</b> " + formatThaiDate(record.date) + "</div>");
+  parts.push("<div><b>Inspector:</b> " + escapeHtml(record.inspector || "-") + "</div>");
+  parts.push("</div>");
+  parts.push("<table class=\"checklist-table\"><thead><tr><th>#</th><th>List</th><th>Result</th><th>Remark</th></tr></thead><tbody>" + rows + "</tbody></table>");
+  if (record.remark) {
+    parts.push("<div class=\"op-data-title\">หมายเหตุทั่วไป</div>");
+    parts.push("<div>" + escapeHtml(record.remark) + "</div>");
+  }
+  if (photos && photos.length > 0) {
+    parts.push("<div class=\"op-data-title\">PHOTOS</div>");
+    parts.push("<div class=\"photo-grid\">");
+    for (let p = 0; p < photos.length; p++) {
+      parts.push("<img src=\"" + photos[p] + "\" class=\"photo-item\" />");
+    }
+    parts.push("</div>");
+  }
+  return parts.join("");
+}
+
+function RoomInspectReportView(props) {
+  const record = props.record;
+  const onEdit = props.onEdit;
+  const onDelete = props.onDelete;
+  const [popupBlocked, setPopupBlocked] = useState(false);
+  const [photos, setPhotos] = useState([]);
+
+  useEffect(function () {
+    if (!record || !window.fbDb) return;
+    window.fbDb.collection("roomInspectPhotos").where("roomInspectId", "==", record.id).get().then(function (snap) {
+      const arr = [];
+      snap.forEach(function (doc) { arr.push(doc.data().url); });
+      setPhotos(arr);
+    });
+  }, [record ? record.id : null]);
+
+  if (!record) { return <div className="text-center text-neutral-500 py-10">ไม่พบข้อมูล</div>; }
+
+  function handleExport() {
+    const ok = openPrintWindow(buildRoomInspectReportHtml(record, photos), "RoomInspect_" + (record.roomNo || "") + "_" + (record.date || ""));
+    setPopupBlocked(!ok);
+  }
+  function handleDeleteClick() {
+    if (window.confirm("ต้องการลบรายการนี้ใช่หรือไม่? ลบแล้วกู้คืนไม่ได้")) {
+      onDelete(record.id);
+    }
+  }
+
+  return (
+    <div className="space-y-4 pb-6">
+      <div className="flex gap-2">
+        <button onClick={onEdit} className="flex-1 border border-neutral-700 rounded-lg py-2 text-sm font-medium flex items-center justify-center gap-1.5 text-neutral-300"><IconEdit size={15} />แก้ไข</button>
+        <button onClick={handleExport} className="flex-1 bg-gradient-to-r from-amber-400 to-amber-600 text-black rounded-lg py-2 text-sm font-semibold flex items-center justify-center gap-1.5"><IconPrinter size={15} />พิมพ์ / Export</button>
+        <button onClick={handleDeleteClick} className="border border-red-800/50 text-red-300 rounded-lg px-3 flex items-center justify-center"><IconTrash size={16} /></button>
+      </div>
+      {popupBlocked ? <div className="text-xs text-red-300 bg-red-950/40 border border-red-800/50 rounded-lg px-3 py-2">เบราว์เซอร์บล็อกหน้าต่างป๊อปอัป กรุณาอนุญาตป๊อปอัปสำหรับหน้านี้ แล้วกดพิมพ์ / Export อีกครั้ง</div> : null}
+
+      <div className="bg-neutral-900 rounded-xl border border-neutral-800 border-t-2 border-t-amber-500/40 shadow-lg shadow-black/30 p-4">
+        <div className="text-center mb-4">
+          <div className="font-serif text-lg font-semibold text-amber-200">PRESIDENT HOTEL AND TOWER</div>
+          <div className="text-xs text-neutral-500">DAILY ROOM INSPECTION CHECKLIST</div>
+        </div>
+        <div className="grid grid-cols-2 gap-2 text-xs border-t border-b border-neutral-800 py-3 mb-3 text-neutral-300">
+          <div><span className="text-neutral-500">Building:</span> {record.building}</div>
+          <div><span className="text-neutral-500">Room No.:</span> {record.roomNo}</div>
+          <div><span className="text-neutral-500">Floor:</span> {record.floor}</div>
+          <div><span className="text-neutral-500">Date:</span> {formatThaiDate(record.date)}</div>
+          <div><span className="text-neutral-500">Inspector:</span> {record.inspector || "-"}</div>
+        </div>
+        <table className="w-full text-xs mb-4">
+          <thead><tr className="text-left text-amber-500/60 border-b border-neutral-800"><th className="py-1 pr-1 w-6">#</th><th className="py-1">รายการ</th><th className="py-1 text-center w-14">ผลตรวจ</th><th className="py-1">หมายเหตุ</th></tr></thead>
+          <tbody>
+            {ROOM_INSPECT_ITEMS.map(function (item) {
+              const v = (record.checklist && record.checklist[item.id]) || {};
+              return (
+                <tr key={item.id} className="border-b border-neutral-800/70">
+                  <td className="py-1.5 text-neutral-500">{item.id}</td>
+                  <td className="py-1.5 text-neutral-300">{item.desc}</td>
+                  <td className="py-1.5 text-center">
+                    {v.status === "pass" ? <span className="text-emerald-400 font-medium">ปกติ</span> : null}
+                    {v.status === "fail" ? <span className="text-red-400 font-medium">ผิดปกติ</span> : null}
+                    {v.status === "na" ? <span className="text-neutral-500">N/A</span> : null}
+                    {!v.status ? <span className="text-neutral-700">-</span> : null}
+                  </td>
+                  <td className="py-1.5 text-neutral-500">{v.remark || ""}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        {record.remark ? (
+          <div className="mb-4">
+            <div className="font-serif text-amber-300 uppercase tracking-wider text-xs mb-2">หมายเหตุทั่วไป</div>
+            <div className="text-xs text-neutral-300">{record.remark}</div>
+          </div>
+        ) : null}
+        {photos.length > 0 ? (
+          <div className="mb-2">
+            <div className="font-serif text-amber-300 uppercase tracking-wider text-xs mb-2">รูปภาพประกอบ</div>
+            <div className="grid grid-cols-3 gap-2">
+              {photos.map(function (src, idx) {
+                return <img key={idx} src={src} className="w-full aspect-square object-cover rounded border border-neutral-800" />;
+              })}
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -6139,6 +6529,8 @@ function App() {
   const [poolEntries, setPoolEntries] = useState({});
   const [poolMeta, setPoolMeta] = useState({});
   const [activeAhuId, setActiveAhuId] = useState(null);
+  const [roomInspectRecords, setRoomInspectRecords] = useState([]);
+  const [activeRoomInspectId, setActiveRoomInspectId] = useState(null);
   const [poolEditDate, setPoolEditDate] = useState(todayISO());
   const [poolMonth, setPoolMonth] = useState(thisMonthStr());
   const [scheduleRecords, setScheduleRecords] = useState([]);
@@ -6204,6 +6596,13 @@ function App() {
       setLoading(false);
     }, function () { setLoading(false); });
 
+    const unsubRoomInspect = window.fbDb.collection("roomInspectRecords").onSnapshot(function (snap) {
+      const arr = [];
+      snap.forEach(function (doc) { arr.push(doc.data()); });
+      arr.sort(function (a, b) { return (b.createdAt || "").localeCompare(a.createdAt || ""); });
+      setRoomInspectRecords(arr);
+    });
+
     const unsubPool = window.fbDb.collection("poolEntries").onSnapshot(function (snap) {
       const map = {};
       snap.forEach(function (doc) { map[doc.id] = doc.data(); });
@@ -6264,7 +6663,7 @@ function App() {
       setShopRecords(arr);
     });
 
-    return function () { unsubAhu(); unsubPool(); unsubMeta(); unsubSchedule(); unsubRoomCheck(); unsubRoomEquip(); unsubFirePump(); unsubGenerator(); unsubRentalOffice(); unsubShop(); };
+    return function () { unsubAhu(); unsubRoomInspect(); unsubPool(); unsubMeta(); unsubSchedule(); unsubRoomCheck(); unsubRoomEquip(); unsubFirePump(); unsubGenerator(); unsubRentalOffice(); unsubShop(); };
   }, []);
 
   function showToast(msg) { setToast(msg); setTimeout(function () { setToast(""); }, 2500); }
@@ -6273,6 +6672,8 @@ function App() {
 
   function openAhuForm(id) { setActiveAhuId(id || null); navigate("ahuForm"); }
   function openAhuReport(id) { setActiveAhuId(id); navigate("ahuReport"); }
+  function openRoomInspectForm(id) { setActiveRoomInspectId(id || null); navigate("roomInspectForm"); }
+  function openRoomInspectReport(id) { setActiveRoomInspectId(id); navigate("roomInspectReport"); }
   function openPoolForm(dateKey) { setPoolEditDate(dateKey || todayISO()); navigate("poolForm"); }
   function openScheduleForm(id) { setActiveScheduleId(id || null); navigate("scheduleForm"); }
   function openScheduleFiles() { navigate("scheduleFiles"); }
@@ -6317,6 +6718,35 @@ function App() {
       }).catch(function () {});
     }
     setStack(["home", "ahuHome", "ahuList"]);
+  }
+
+  function saveRoomInspectRecord(record) {
+    if (!record.id) { record.id = Date.now().toString(); }
+    if (!record.createdAt) { record.createdAt = new Date().toISOString(); }
+    if (window.fbDb) {
+      window.fbDb.collection("roomInspectRecords").doc(record.id).set(record)
+        .then(function () { showToast("บันทึกข้อมูลเรียบร้อย"); })
+        .catch(function () { showToast("บันทึกไม่สำเร็จ ลองอีกครั้ง"); });
+    }
+    setActiveRoomInspectId(record.id);
+    setStack(["home", "roomInspectHome", "roomInspectList", "roomInspectReport"]);
+  }
+
+  function deleteRoomInspectRecord(id) {
+    if (window.fbDb) {
+      window.fbDb.collection("roomInspectRecords").doc(id).delete()
+        .then(function () { showToast("ลบรายการเรียบร้อย"); })
+        .catch(function () { showToast("ลบไม่สำเร็จ ลองอีกครั้ง"); });
+      window.fbDb.collection("roomInspectPhotos").where("roomInspectId", "==", id).get().then(function (snap) {
+        snap.forEach(function (doc) { doc.ref.delete(); });
+      });
+    }
+    if (window.fbStorage) {
+      window.fbStorage.ref().child("roomInspectPhotos/" + id).listAll().then(function (res) {
+        res.items.forEach(function (item) { item.delete().catch(function () {}); });
+      }).catch(function () {});
+    }
+    setStack(["home", "roomInspectHome", "roomInspectList"]);
   }
 
   function savePoolEntry(dateKey, entry) {
@@ -6528,6 +6958,7 @@ function App() {
   }
 
   const ahuRecent = ahuRecords.slice(0, 3);
+  const roomInspectRecent = roomInspectRecords.slice(0, 3);
   const roomCheckRecent = roomCheckRecords.slice(0, 3);
   const roomEquipRecent = roomEquipRecords.slice(0, 3);
   const firePumpRecent = firePumpRecords.slice(0, 3);
@@ -6544,6 +6975,7 @@ function App() {
 
   function handleSelectJob(key) {
     if (key === "ahu") navigate("ahuHome");
+    else if (key === "roomInspect") navigate("roomInspectHome");
     else if (key === "pool") navigate("poolHome");
     else if (key === "schedule") navigate("scheduleHome");
     else if (key === "roomcheck") navigate("roomCheckHome");
@@ -6621,6 +7053,30 @@ function App() {
         {view === "ahuReport" ? (
           <AhuReportView record={ahuRecords.filter(function (r) { return r.id === activeAhuId; })[0]}
             onEdit={function () { navigate("ahuForm"); }} onDelete={deleteAhuRecord} />
+        ) : null}
+
+        {view === "roomInspectHome" ? (
+          <RoomInspectHomeView count={roomInspectRecords.length} recent={roomInspectRecent}
+            onNew={function () { openRoomInspectForm(null); }}
+            onHistory={function () { navigate("roomInspectList"); }}
+            onOpenReport={function (id) { openRoomInspectReport(id); }} />
+        ) : null}
+
+        {view === "roomInspectForm" ? (
+          <RoomInspectFormView record={roomInspectRecords.filter(function (r) { return r.id === activeRoomInspectId; })[0] || null}
+            onSave={saveRoomInspectRecord} onCancel={goBack} onDelete={deleteRoomInspectRecord} />
+        ) : null}
+
+        {view === "roomInspectList" ? (
+          <RoomInspectListView records={roomInspectRecords}
+            onSelect={function (id) { openRoomInspectReport(id); }}
+            onNew={function () { openRoomInspectForm(null); }}
+            onDelete={deleteRoomInspectRecord} />
+        ) : null}
+
+        {view === "roomInspectReport" ? (
+          <RoomInspectReportView record={roomInspectRecords.filter(function (r) { return r.id === activeRoomInspectId; })[0]}
+            onEdit={function () { navigate("roomInspectForm"); }} onDelete={deleteRoomInspectRecord} />
         ) : null}
 
         {view === "poolForm" ? (
