@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ══════════════════════════════════════════════════════════
+   LIGHT MODE – applied when <html class="light">
+══════════════════════════════════════════════════════════ */
+html.light body,
+html.light .min-h-screen        { background-color:#f5f2ec !important; color:#1a1a1a !important; }
+html.light .bg-neutral-950,
+html.light .bg-black            { background-color:#f5f2ec !important; }
+html.light .bg-neutral-900      { background-color:#ffffff !important; }
+html.light .bg-neutral-800      { background-color:#ece7db !important; }
+html.light .bg-neutral-700      { background-color:#ddd7c8 !important; }
+
+html.light .text-neutral-100    { color:#111111 !important; }
+html.light .text-neutral-200    { color:#1f1f1f !important; }
+html.light .text-neutral-300    { color:#404040 !important; }
+html.light .text-neutral-400    { color:#555555 !important; }
+html.light .text-neutral-500    { color:#6b6b6b !important; }
+html.light .text-neutral-600    { color:#8a8a8a !important; }
+html.light .text-neutral-700    { color:#aaaaaa !important; }
+html.light .text-amber-50,
+html.light .text-amber-100      { color:#111111 !important; }
+
+html.light .border-neutral-800  { border-color:#ddd7c8 !important; }
+html.light .border-neutral-700  { border-color:#ccc6b5 !important; }
+html.light .border-t-neutral-800{ border-top-color:#ddd7c8 !important; }
+
+html.light .divide-neutral-800\/60 > *+* { border-color:#ddd7c8 !important; }
+html.light .divide-neutral-800\/50 > *+* { border-color:#ddd7c8 !important; }
+
+/* header bar – keep dark for brand */
+html.light .bg-gradient-to-r.from-black.via-neutral-900.to-black {
+  background: linear-gradient(to right, #1c1208, #291c0b, #1c1208) !important;
+}
+
+/* inputs */
+html.light input,
+html.light select,
+html.light textarea {
+  background-color:#ece7db !important;
+  color:#111111 !important;
+  border-color:#ccc6b5 !important;
+}
+html.light input::placeholder { color:#9c9080 !important; }
+html.light input[readonly]    { background-color:#f0ece3 !important; }
+
+/* home job cards */
+html.light .bg-gradient-to-br.from-neutral-900.to-black {
+  background: linear-gradient(to bottom right,#ffffff,#f0ece3) !important;
+}
+html.light .border-amber-500\/20  { border-color:rgba(180,130,30,.25) !important; }
+html.light .text-neutral-400.mt-1 { color:#666 !important; }
+
+/* table rows – override inline rgba() dark backgrounds */
+html.light table tbody tr { background-color: transparent !important; }
+html.light table tbody tr:nth-child(even) { background-color:rgba(236,231,219,.55) !important; }
+html.light table thead th { background-color:#f0ece3 !important; }
+html.light table th[style] { background-color:#f0ece3 !important; }
+html.light table td[style*="sticky"],
+html.light table th[style*="sticky"] { background-color:#f5f2ec !important; }
+
+/* gantt section header row (colSpan td) */
+html.light table tbody tr td.font-bold { background-color:#ece7db !important; }
+
+/* week badge in monthly view */
+html.light .bg-amber-500\/15 { background-color:rgba(217,119,6,.12) !important; }
+
+/* checklist items */
+html.light .bg-neutral-950\/40 { background-color:rgba(240,236,227,.7) !important; }
+
+/* signature pad – keep white */
+html.light canvas.bg-white { background-color:#fff !important; }
+
+/* toast */
+html.light .fixed.bottom-4 .bg-neutral-900 { background-color:#fff !important; }
+
+/* shadows – softer */
+html.light [class*="shadow-black"] {
+  box-shadow:0 2px 10px rgba(0,0,0,.09),0 1px 3px rgba(0,0,0,.06) !important;
+}
+
+/* scrollbar (webkit) */
+html.light ::-webkit-scrollbar      { background:#f0ece3; }
+html.light ::-webkit-scrollbar-thumb{ background:#ccc6b5; border-radius:4px; }
